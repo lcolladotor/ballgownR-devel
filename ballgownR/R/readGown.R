@@ -59,7 +59,7 @@ readGown <- function(dataDir, samplePattern, verbose=TRUE) {
 	## Read read counts and raw coverage info for all exons in <reference_transcripts>
 	if(verbose) message("Reading exon data files")
 	exonFiles <- sapply(dirs, list.files, pattern="e_data.ctab", full.names=TRUE)
-	exonAll <- lapply(exonFiles[1:3], .readExon)
+	exonAll <- lapply(exonFiles[1:n], .readExon)
 	
 	## Merge the results
 	if(verbose) message("Merging exon data")
