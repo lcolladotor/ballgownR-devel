@@ -1,29 +1,15 @@
-#### Auxiliary functions
-
-## Read intron files
-.readIntron <- function(file){
-	intron <- read.table(file, header=TRUE, sep="\t", colClasses=c("integer", "character", "factor", "integer", "integer", "integer", "integer", "numeric"))
-	intron <- intron[order(intron$i_id), ]
-	rownames(intron) <- 1:nrow(intron)
-	return(intron)
-}
-
-## Read counts and raw coverage
-.readExon <- function(file) {
-	exon <- read.table(file, header=TRUE, sep="\t", colClasses=c("integer", "character", "factor", "integer", "integer", "integer", "integer", "numeric", "numeric", "numeric", "numeric", "numeric"))
-	exon <- exon[order(exon$e_id), ]
-	rownames(exon) <- 1:nrow(exon)
-	return(exon)
-}
-
-## Read transcript data files
-.readTrans <- function(file) {
-	trans <- read.table(file, header=TRUE, sep="\t", colClasses=c("integer", "character", "factor", "integer", "integer", "character", "integer", "integer", "character", "character", "numeric", "numeric"))
-	trans <- trans[order(trans$t_id), ]
-	rownames(trans) <- 1:nrow(trans)
-	return(trans)
-}
-
+#' Read ballgown output *.ctab files from a data directory with multiple samples
+#'
+#' \code{readGown} reads the *.ctab files that ballgown creates. It then uses plyr to merge the information from multiple samples.
+#'
+#' @param dataDir must be a character that specifies the data directory path. Inside of it there must be a directory for each sample.
+#' @param samplePattern must be a character that specifies the pattern to use that identifies the sample directories
+#' @param verbose is a logical. If TRUE updates will be printed via message.
+#' @return a list with e2t: mappting between exons and transcripts, i2t: mapping between introns and transcripts, intron: i_data.ctab merged in wide format, exon: e_data.ctab merged in mide format, trans: t_data.ctab merged in wide format, dirs: sample directories (specifies the order in which they are merged), mergedDate: date this function was run
+#' @export
+#' @author Leonardo Collado-Torres \email{lcollado@@jhsph.edu}
+#' @examples
+#' ?readGown # Read the help. Example to do!
 
 #### Main function
 readGown <- function(dataDir, samplePattern, verbose=TRUE) {
@@ -97,4 +83,30 @@ readGown <- function(dataDir, samplePattern, verbose=TRUE) {
 	if(verbose) message(date())
 	# Done!
 	return(result)
+}
+
+#### Auxiliary functions
+
+## Read intron files
+.readIntron <- function(file){
+	intron <- read.table(file, header=TRUE, sep="\t", colClasses=c("integer", "character", "factor", "integer", "integer", "integer", "integer", "numeric"))
+	intron <- intron[order(intron$i_id), ]
+	rownames(intron) <- 1:nrow(intron)
+	return(intron)
+}
+
+## Read counts and raw coverage
+.readExon <- function(file) {
+	exon <- read.table(file, header=TRUE, sep="\t", colClasses=c("integer", "character", "factor", "integer", "integer", "integer", "integer", "numeric", "numeric", "numeric", "numeric", "numeric"))
+	exon <- exon[order(exon$e_id), ]
+	rownames(exon) <- 1:nrow(exon)
+	return(exon)
+}
+
+## Read transcript data files
+.readTrans <- function(file) {
+	trans <- read.table(file, header=TRUE, sep="\t", colClasses=c("integer", "character", "factor", "integer", "integer", "character", "integer", "integer", "character", "character", "numeric", "numeric"))
+	trans <- trans[order(trans$t_id), ]
+	rownames(trans) <- 1:nrow(trans)
+	return(trans)
 }
