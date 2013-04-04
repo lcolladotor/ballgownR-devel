@@ -16,6 +16,10 @@ df2 <- data.frame(line = rep(cities, each = n), x = rep(1:n, length(cities)), y 
 col <- '["#393b79","#5254a3","#6b6ecf"]'
 clickme(df2, "line_with_focus2", params=list(color=col), html="test.html")
 
+col <- '["#393b79","#5254a3","#6b6ecf","#6b6ecf"]'
+df3 <- rbind(df2, data.frame(line=rep("exon", 5), x=11:15, y=-5))
+clickme(df3, "line_with_focus2", params=list(color=col), html="test3.html")
+
 
 
 
