@@ -18,7 +18,7 @@ col <- '["#393b79","#5254a3","#6b6ecf"]'
 clickme(df2, "line_with_focus2", params=list(color=col), html="test.html")
 
 ## Test with groups
-test <- data.frame(line=rep(letters[1:9], each=30), x=rep(1:30, 9), y=rnorm(30*9))
+test <- data.frame(line=paste0("veryLongText", rep(letters[1:9], each=30)), x=rep(1:30, 9), y=rnorm(30*9))
 col2 <- paste0('["', paste0(rep(rainbow_hcl(3, start = 30, end = 300), each=3), collapse='","'), '"]')
 clickme(test, "line_with_focus2", params=list(color=col2), html="test2.html")
 
