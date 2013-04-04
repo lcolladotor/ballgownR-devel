@@ -19,9 +19,15 @@ prepare_data <- function(data){
 #' @return The opts variable with the opts$data variable filled in
 translate <- function(data, opts) {
     library(rjson)
+	
     data <- as.data.frame(data, stringsAsFactors=FALSE)
     translated_data <- prepare_data(data)
     translated_data <- toJSON(translated_data)
+	if(is.null(opts$param$color)) {
+		library(colorspace)
+		color <- paste0('["', paste0(rainbow_hcl(length(unique(data$line)), start = 30, end = 300), collapse='","'), '"]')
+		opts$params$color <- color
+	}	
     opts$data <- translated_data
     opts
 }
