@@ -1,0 +1,14 @@
+CHANGES IN VERSION 1.0.0
+------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o readGown() is now available
+	
+NEW FEATURES
+
+    o readGown() allows you to read in ballgown's output
+
+BUG FIXES
+
+    o No changes classified as 'bug fixes'
