@@ -17,7 +17,7 @@
 #' @examples
 #' ?viewGene # Read the help. Example to do!
 
-viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color="#000000", location="bottom", spacing=1, html=NULL, wdir=NULL) {
+viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL) {
 	## Load required libraries
 	require(clickme)
 	require(colorspace)
@@ -46,6 +46,8 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	start <- min(gown$trans$start[idx.t])
 	end <- max(gown$trans$end[idx.t])	
 	nBases <- end - start + 1
+	
+	
 	
 	## Subset trans, exon and intron
 	t.id <- gown$trans$t_id[idx.t]
@@ -132,15 +134,22 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	}
 	
 	## Adjust where to show the exons and it's spacing
-	exons.df$y <- exons.df$y * spacing
+	exons.df$y <- exons.df$y * diff(range(toAdd$y)) * spacing
 	if(location == "bottom") {
-		exons.df$y <- (-1) * exons.df$y - diff(range(toAdd$y)) * 0.1
+		exons.df$y <- (-1) * exons.df$y - diff(range(toAdd$y)) * spacing
+		border.y <- min(c(exons.df$y, toAdd$y) * 1.1
 	} else {
-		exons.df$y <- exons.df$y + diff(range(toAdd$y)) * 0.1
+		exons.df$y <- exons.df$y + diff(range(toAdd$y)) * spacing
+		border.y <- max(c(exons.df$y, toAdd$y)) * 1.1
 	}
 	
+	
+	
+	## Set a border	
+	border <- data.frame(line=c("border", "border"), x=c(start, end), y=c(border.y, border.y))
+	
 	## Merge data
-	data <- rbind(exons.df, toAdd)
+	data <- rbind(exons.df, toAdd, border)
 	
 	## Purge useless info
 	filter <- function(data) {
@@ -163,7 +172,7 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	
 	
 	## Format the colors
-	colors <- c(exons.col, sample.col)
+	colors <- c(exons.col, sample.col, exons.col[1])
 	## Format for js
 	colors <- paste0('["', paste0(colors, collapse='","'), '"]')
 	
