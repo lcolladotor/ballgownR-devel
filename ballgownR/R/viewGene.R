@@ -31,7 +31,7 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	## Copy layout to working directory
 	if(!"genome_info" %in% dir()) {
 		layout.dir <- system.file(package="ballgownR", "extdata", "genome_info")
-		system(paste("cp", layout.dir, "genome_info"))
+		system(paste0("cp -r ", layout.dir, " ", wdir, "/"))
 	}
 	
 	## Change clickme's path

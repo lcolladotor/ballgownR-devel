@@ -5,7 +5,7 @@ Version: 1.0.1
 Date: 2013-04-05
 Author: Leonardo Collado-Torres, Alyssa Frazee, Andrew Jaffe, Jeffrey Leek
 Maintainer: Leonardo Collado-Torres <lcollado@jhsph.edu>
-Depends: R(>= 2.15.2), plyr, clickme
+Depends: R(>= 2.15.2), plyr, clickme, colorspace
 Description: ballgownR allows you to read in ballgown output files and explore the results. The package might be expanded to deal with derfinder output files as well.
 License: What license is it under?
 URL: https://github.com/lcolladotor/ballgownR-devel/tree/master/ballgownR
