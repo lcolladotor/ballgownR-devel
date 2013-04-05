@@ -137,7 +137,7 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	exons.df$y <- exons.df$y * diff(range(toAdd$y)) * spacing
 	if(location == "bottom") {
 		exons.df$y <- (-1) * exons.df$y - diff(range(toAdd$y)) * spacing
-		border.y <- min(c(exons.df$y, toAdd$y) * 1.1
+		border.y <- min(c(exons.df$y, toAdd$y)) * 1.1
 	} else {
 		exons.df$y <- exons.df$y + diff(range(toAdd$y)) * spacing
 		border.y <- max(c(exons.df$y, toAdd$y)) * 1.1
