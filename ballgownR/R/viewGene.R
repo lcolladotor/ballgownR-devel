@@ -120,11 +120,11 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 		names(which) <- chr
 		param <- ScanBamParam(which=which)
 		
-		for(s in gown$dirs) {
+		for(s in names(gown$dirs)) {
 			bamfile <- BamFile(paste(tophatDir, s, "accepted_hits.bam", sep="/"))
 			# Read it and get the coverage. Extract only the one for the chr in question
 			coverage <- coverage(readBamGappedAlignments(bamfile, param=param))[[chr]]
-			coverage.df$y[ coverage.df$line == s] <- coverage
+			coverage.df$y[ coverage.df$line == s] <- as.vector(coverage[start:end])
 		}
 		
 		toAdd <- coverage.df
@@ -169,7 +169,8 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	
 		
 	## Visualize
-	clickme(data.filt, "genome_info", params=list(color=colors), html=html)
+	#clickme(data.filt, "genome_info", params=list(color=colors), html=html)
+	## TO FIX: Error: Input to str_c should be atomic vectors
 	
 	## Done
 	return(list(data=data.filt, color=colors))
