@@ -1,0 +1,39 @@
+info: |
+    Show multiple lines, each with a different color. Allow zooming across the x-axis.
+
+valid_names:
+    - line
+    - x
+    - "y"
+
+name_comments: |
+    "line" indicates the line name.
+
+scripts:
+    - d3.v2.min.js
+    - nv.d3.min.js
+    - tooltip.js
+    - utils.js
+    - legend.js
+    - axis.js
+    - line.js
+    - lineWithFocusChart.js
+
+styles:
+    - nv.d3.css
+
+default_parameters: {
+    width: 800,
+    height: 500,
+    color: nv.utils.defaultColor(),
+}
+
+require_packages:
+    - rjson
+
+require_server: no
+
+original_url: http://nvd3.org/ghpages/lineWithFocus.html
+
+
+

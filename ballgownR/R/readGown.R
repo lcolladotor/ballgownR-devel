@@ -48,34 +48,34 @@ readGown <- function(dataDir, samplePattern, verbose=TRUE) {
 	## Read counts for all introns in <reference_transcripts>
 	if(verbose) message("Reading intron data files")
 	intronFiles <- sapply(dirs, list.files, pattern="i_data.ctab", full.names=TRUE)
-	intronAll <- lapply(intronFiles[1:n], .readIntron)
+	intronAll <- lapply(intronFiles, .readIntron)
 	
 	## Merge the results
 	if(verbose) message("Merging intron data")
 	intron <- join_all(intronAll, by=c("i_id", "chr", "strand", "start", "end"), type="left")
-	colnames(intron)  <- c("i_id", "chr", "strand", "start", "end", paste(c("rcount", "ucount", "mrcount"), rep(1:n, each=3), sep="."))
+	colnames(intron)  <- c("i_id", "chr", "strand", "start", "end", paste(c("rcount", "ucount", "mrcount"), rep(names(dirs), each=3), sep="."))
 	
 
 	## Read read counts and raw coverage info for all exons in <reference_transcripts>
 	if(verbose) message("Reading exon data files")
 	exonFiles <- sapply(dirs, list.files, pattern="e_data.ctab", full.names=TRUE)
-	exonAll <- lapply(exonFiles[1:n], .readExon)
+	exonAll <- lapply(exonFiles, .readExon)
 	
-	## Merge the results
+	## Read exon data
 	if(verbose) message("Merging exon data")
 	exon <- join_all(exonAll, by=c("e_id", "chr", "strand", "start", "end"), type="left")
-	colnames(exon) <- c("e_id", "chr", "strand", "start", "end", paste(c("rcount", "ucount", "mrcount", "cov", "cov_sd", "mcov", "mcov_sd"), rep(1:n, each=7), sep="."))
+	colnames(exon) <- c("e_id", "chr", "strand", "start", "end", paste(c("rcount", "ucount", "mrcount", "cov", "cov_sd", "mcov", "mcov_sd"), rep(names(dirs), each=7), sep="."))
 	
 	
 	## Read transcript data
 	if(verbose) message("Reading transcription data files")
 	transFiles <- sapply(dirs, list.files, pattern="t_data.ctab", full.names=TRUE)
-	transAll <- lapply(transFiles[1:n], .readTrans)
+	transAll <- lapply(transFiles, .readTrans)
 	
 	## Merge the results
 	if(verbose) message("Merging transcription data")
 	trans <- join_all(transAll, by=c("t_id", "chr", "strand", "start", "end", "t_name", "num_exons", "length", "gene_id", "gene_name"), type="left")
-	colnames(trans) <- c("t_id", "chr", "strand", "start", "end", "t_name", "num_exons", "length", "gene_id", "gene_name", paste(c("cov", "FPKM"), rep(1:n, each=2), sep="."))
+	colnames(trans) <- c("t_id", "chr", "strand", "start", "end", "t_name", "num_exons", "length", "gene_id", "gene_name", paste(c("cov", "FPKM"), rep(names(dirs), each=2), sep="."))
 	
 	if(verbose) message("Wrapping up the results")
 	result <- list(e2t=e2t, i2t=i2t, intron=intron, exon=exon, trans=trans, dirs=dirs, mergedDate=date())

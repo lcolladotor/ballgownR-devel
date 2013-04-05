@@ -12,8 +12,8 @@ ballgownR allows you to read in ballgown output files and explore the results. T
 \tabular{ll}{
 Package: \tab ballgownR\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2013-03-31\cr
+Version: \tab 1.0.1\cr
+Date: \tab 2013-04-05\cr
 License: \tab What license is it under?\cr
 }
 Check readGown
