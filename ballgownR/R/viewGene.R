@@ -21,6 +21,7 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	## Load required libraries
 	require(clickme)
 	require(colorspace)
+	suppressMessages(require(Rsamtools))
 	
 	## Set working directory
 	if(is.null(wdir)) wdir <- getwd()
@@ -62,7 +63,7 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 		## Get transcript name
 		line <- names(e.id)[[e]]		
 		res <- lapply(e.id[[e]], function(exon) {	
-			x <- seq(gown$exon$start[exon], gown$exon$end[exon])			
+			x <- c(gown$exon$start[exon], gown$exon$end[exon])			
 			y <- rep(e, length(x))
 			data.frame(line=rep(line, length(x)), x=x, y=y)				 
 		})
@@ -74,8 +75,9 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	## Define sample colors
 	group.col <- rainbow_hcl(length(unique(group)), start = 30, end = 300)
 	sample.col <- rep(NA, length(group))
-	for(j in unique(group)){
-		sample.col[group %in% j] <- group.col[j]
+	for(j in 1:length(unique(group))){
+		k <- unique(group)[j]
+		sample.col[group %in% k] <- group.col[k]
 	}
 	
 	
@@ -132,22 +134,44 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	## Adjust where to show the exons and it's spacing
 	exons.df$y <- exons.df$y * spacing
 	if(location == "bottom") {
-		exons.df$y <- (-1) * exons.df$y
+		exons.df$y <- (-1) * exons.df$y - diff(range(toAdd$y)) * 0.1
 	} else {
-		exons.df$y <- exons.df$y + max(toAdd$y) * 1.1
+		exons.df$y <- exons.df$y + diff(range(toAdd$y)) * 0.1
 	}
 	
 	## Merge data
 	data <- rbind(exons.df, toAdd)
+	
+	## Purge useless info
+	filter <- function(data) {
+		result <- lapply(unique(data$line), function(x) {
+			sub <- data[ data$line == x, ]
+			which.diff <- which(diff(sub$y) != 0)
+			if(length(which.diff) == 0) {
+				res <- rbind(sub[1, ], sub[nrow(sub), ])
+			} else {
+				res <- rbind(sub[1, ], sub[as.vector(sapply(which.diff, function(z) { c(z, z+1)})), ])
+				res <- rbind(res, sub[nrow(sub), ])
+			}
+			return(res)
+		}) 
+		result <- do.call(rbind, result)
+		rownames(result) <- 1:nrow(result)
+		return(result)
+	}
+	data.filt <- filter(data)
+	
+	
+	## Format the colors
 	colors <- c(exons.col, sample.col)
 	## Format for js
 	colors <- paste0('["', paste0(colors, collapse='","'), '"]')
 	
 		
 	## Visualize
-	clickme(data, "genome_info", params=list(color=colors), html=html)
+	clickme(data.filt, "genome_info", params=list(color=colors), html=html)
 	
 	## Done
-	return(invisible(html))
+	return(list(data=data.filt, color=colors))
 	
 }
