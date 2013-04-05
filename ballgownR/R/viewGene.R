@@ -123,8 +123,8 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 		for(s in names(gown$dirs)) {
 			bamfile <- BamFile(paste(tophatDir, s, "accepted_hits.bam", sep="/"))
 			# Read it and get the coverage. Extract only the one for the chr in question
-			coverage <- coverage(readBamGappedAlignments(bamfile, param=param))[[chr]]
-			coverage.df$y[ coverage.df$line == s] <- as.vector(coverage[start:end])
+			cov <- coverage(readBamGappedAlignments(bamfile, param=param))[[chr]]
+			coverage.df$y[ coverage.df$line == s] <- as.vector(cov[start:end])
 		}
 		
 		toAdd <- coverage.df
