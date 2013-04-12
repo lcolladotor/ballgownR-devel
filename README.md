@@ -23,3 +23,5 @@ install_github("ballgownR-devel", "lcolladotor", subdir="ballgownR")
 ## Visualization example:
 
 Check /test-viewGene
+
+Powered by [clickme](https://github.com/nachocab/clickme)
