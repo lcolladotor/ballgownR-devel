@@ -88,7 +88,7 @@ infoGene <- function(geneID, gown, group, countIntron=TRUE, whichCount="mrcount"
 			vals <- as.vector(as.matrix(df[xon, whichCols]))
 			y <- rep(vals, each=length(x))
 			idx <- result$x %in% x
-			result$y[idx] <- pmin(result$y[idx],  y, na.rm=TRUE)
+			result$y[idx] <- pmax(result$y[idx],  y, na.rm=TRUE)
 		}
 	}
 	return(result)
@@ -99,6 +99,7 @@ infoGene <- function(geneID, gown, group, countIntron=TRUE, whichCount="mrcount"
 	## The filtering is done by unique elements of data$line (for example, by sample)
 	result <- lapply(unique(data$line), function(x) {
 		sub <- data[ data$line == x, ]
+		sub$y[is.na(sub$y)] <- 0
 		which.diff <- which(diff(sub$y) != 0)
 		if(length(which.diff) == 0) {
 			res <- rbind(sub[1, ], sub[nrow(sub), ])
