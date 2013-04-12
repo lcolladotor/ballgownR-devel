@@ -8,3 +8,18 @@
 ## What is ballgown?
 
 To fill in later
+
+## Installation instructions:
+
+```S
+install.packages("devtools")
+
+library(devtools)
+install_github("clickme", "nachocab")
+install_github("ballgownR-devel", "lcolladotor", subdir="ballgownR")
+```
+
+
+## Visualization example:
+
+Check /test-viewGene
