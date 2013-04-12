@@ -26,6 +26,9 @@ default_parameters: {
     width: 800,
     height: 500,
     color: nv.utils.defaultColor(),
+    title: "Gene exploration with ballgownR",
+    main: "Gene exploration with ballgownR",
+    groupLabel: "Group label:",
 }
 
 require_packages:

@@ -1,3 +1,20 @@
+CHANGES IN VERSION 1.0.2
+------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o viewGene() is now split into two functions: infoGene() and the plotting function viewGene().
+    o Examples (along with example data) are now available for all functions.
+    
+NEW FEATURES
+
+    o viewGene() will now show a title and color code.
+    o infoGene() now allows the user to specify which count information to show and whether to use the intron data or not. 
+
+BUG FIXES
+
+    o No changes classified as 'bug fixes'
+    
 CHANGES IN VERSION 1.0.1
 ------------------------
 

@@ -2,12 +2,13 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Line with focus</title>
+    <title>{{ opts$params$title }}</title>
     {{ append_scripts(opts) }}
     {{ append_styles(opts) }}
   </head>
 
   <body>
+ 	<h1>{{ opts$params$main }}</h1>
     <script type="text/javascript">
       var data = {{ opts$data }};
 	  var ballgowncolors = {{ opts$params$color }};
@@ -42,6 +43,7 @@
          return chart;
        });
     </script>
+	{{ opts$params$groupLabel }}
 
   </body>
 </html>

@@ -4,16 +4,23 @@
 #'
 #' @param geneID specifies the geneID to look at
 #' @param gown specifies the output from \code{readGown}
-#' @param coverage=FALSE determines whether to make a raw coverage plot or show the rcounts
-#' @param tophatDir specifies the TopHat directory. It is required when \code{coverage} is set to TRUE.
+#' @param group specifies the sample groups and will be used to determine the colors.
+#' @param countIntron specifies whether to use the intron data or not. If set to TRUE, \code{whichCount} has to be mrcount, rcount or ucount.
 #' @param whichCount has to be mrcount, rcount or ucount if \code{countIntron=TRUE}. Otherwise it can also be cov and mcov.
 #' @return A list with the information needed to make the plot with \code{viewGene}
 #' @export
 #' @author Leonardo Collado-Torres \email{lcollado@@jhsph.edu}
 #' @examples
-#' ?viewGene # Read the help. Example to do!
+#' dataDir <- system.file("extdata", "ballgownData", package="ballgownR")
+#' samplePattern <- "sample"
+#' gown <- readGown(dataDir=dataDir, samplePattern=samplePattern)
+#' info <- system.file("extdata", "sample_info.txt", package="ballgownR")
+#' info <- read.table(info, header=TRUE)
+#' match <- sapply(names(gown$dirs), function(x) { which(info$dir == x)})
+#' geneInfo <- infoGene(geneID="gene_1", gown=gown, group=info$outcome[match])
+#' @seealso viewGene
 
-infoGene <- function(geneID, gown, group, countIntron=TRUE, coverage=FALSE, tophatDir=NULL, whichCount="mrcount") {
+infoGene <- function(geneID, gown, group, countIntron=TRUE, whichCount="mrcount") {
 	## Find region of interest
 	idx.t <- which(gown$trans$gene_id == geneID)
 	
@@ -26,74 +33,47 @@ infoGene <- function(geneID, gown, group, countIntron=TRUE, coverage=FALSE, toph
 	t.id <- gown$trans$t_id[idx.t]
 	names(t.id) <- gown$trans$t_name[idx.t]
 	e.id <- lapply(t.id, function(x) { gown$e2t$e_id[ gown$e2t$t_id == x ] })
-	i.id <- lapply(t.id, function(x) { gown$i2t$i_id[ gown$i2t$t_id == x ] })
 	
 	## Get sample names and the exon/intron rcount columns
-	rcount.e <- which(gsub("\\..*", "", names(gown$exon[e.id[[1]][1], ])) == whichCount)
-	rcount.i <- which(gsub("\\..*", "", names(gown$intron[i.id[[1]][1], ])) == whichCount)
-	samples <- gsub(paste0(whichCount, "\\."), "", names(gown$exon[e.id[[1]][1], ]))[rcount.e]
+	count.e <- which(gsub("\\..*", "", names(gown$exon[e.id[[1]][1], ])) == whichCount)
+	samples <- gsub(paste0(whichCount, "\\."), "", names(gown$exon[e.id[[1]][1], ]))[count.e]
 	
 	## Get exon information by transcript
 	exons.df <- lapply(1:length(e.id), function(e) {	
 		## Get transcript name
 		line <- names(e.id)[[e]]		
 		res <- lapply(e.id[[e]], function(exon) {	
-			x <- c(gown$exon$start[exon], gown$exon$end[exon])			
-			y <- rep(e, length(x))
+			x <- c(gown$exon$start[exon]-1, gown$exon$start[exon], gown$exon$end[exon], gown$exon$end[exon]+1)			
+			y <- c(0, e, e, 0)
 			data.frame(line=rep(line, length(x)), x=x, y=y)				 
 		})
 		do.call(rbind, res)
 	})
 	exons.df <- do.call(rbind, exons.df)
 	
-	## Build data: either summarized data or coverage data
-	if(coverage == FALSE) {
+	## Build data: either summarized data 
 				
-		## Initialize rcount data
-		rcount.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(NA, each=nBases))
-		
-		## Count exon information
-		rcount.df <- .countInfo(ids=e.id, df=gown$exon, whichCols=rcount.e, result=rcount.df)
-		
-		## Count intron information
-		if(countIntron) {
-			rcount.df <- .countInfo(ids=i.id, df=gown$intron, whichCols=rcount.i, result=rcount.df)
-		}
-		
-		## Finish
-		toAdd <- rcount.df
-		
-	} else if(coverage == TRUE & !is.null(tophatDir)) {
-		
-		## Load required libraries
-		suppressMessages(require(Rsamtools))
-		
-		## Initialize coverage data
-		coverage.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(0, each=nBases))
-		
-		## Define region to load
-		which <- RangesList(IRanges(start=start, end=end))
-		chr <- gown$trans$chr[idx.t[1]]
-		names(which) <- chr
-		param <- ScanBamParam(which=which)
-		
-		for(s in names(gown$dirs)) {
-			bamfile <- BamFile(paste(tophatDir, s, "accepted_hits.bam", sep="/"))
-			# Read it and get the coverage. Extract only the one for the chr in question
-			cov <- coverage(readBamGappedAlignments(bamfile, param=param))[[chr]]
-			coverage.df$y[ coverage.df$line == s] <- as.vector(cov[start:end])
-		}
-		
-		toAdd <- coverage.df
-		
+	## Initialize rcount data
+	count.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(NA, each=nBases))
+	
+	## Count exon information
+	count.df <- .countInfo(ids=e.id, df=gown$exon, whichCols=count.e, result=count.df)
+	
+	## Count intron information
+	if(countIntron & whichCount %in% c("ucount", "rcount", "mrcount")) {
+		i.id <- lapply(t.id, function(x) { gown$i2t$i_id[ gown$i2t$t_id == x ] })
+		count.i <- which(gsub("\\..*", "", names(gown$intron[i.id[[1]][1], ])) == whichCount)
+		count.df <- .countInfo(ids=i.id, df=gown$intron, whichCols=count.i, result=count.df)
 	}
+	
+	## Finish
+	toAdd <- count.df
 
 	## Purge useless info
-	exons.filt <- .filterInfoGene(exons.df)
 	toAdd.filt <- .filterInfoGene(toAdd)
 	
 	## Merge data
-	data <- list(exons=exons.filt, transInfo=toAdd.filt, start=start, end=end, group=group, geneID=geneID)
+	data <- list(exons=exons.df, transInfo=toAdd.filt, start=start, end=end, group=group, geneID=geneID, ylab=whichCount)
 	
 	## Done
 	return(data)

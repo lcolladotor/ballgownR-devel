@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Line with focus</title>
+    <title>Viewing gene gene_1 with ballgownR</title>
     <script src="genome_info/external/d3.v2.min.js"></script>
 <script src="genome_info/external/nv.d3.min.js"></script>
 <script src="genome_info/external/tooltip.js"></script>
@@ -15,8 +15,9 @@
   </head>
 
   <body>
+ 	<h1>Viewing cov for gene gene_1 via <a href='https://github.com/lcolladotor/ballgownR-devel/tree/master/ballgownR'>ballgownR</a></h1>
     <script type="text/javascript">
-      var data = [{"key":"trans_1","values":[{"x":1,"y":-3},{"x":12000,"y":-3}]},{"key":"trans_2","values":[{"x":1,"y":-4.5},{"x":12000,"y":-4.5}]},{"key":"trans_3","values":[{"x":1,"y":-6},{"x":6000,"y":-6}]},{"key":"trans_4","values":[{"x":4000,"y":-7.5},{"x":12000,"y":-7.5}]},{"key":"sample1","values":[{"x":1,"y":10},{"x":12000,"y":10}]},{"key":"sample2","values":[{"x":1,"y":20},{"x":12000,"y":20}]},{"key":"sample3","values":[{"x":1,"y":15},{"x":12000,"y":15}]},{"key":"sample4","values":[{"x":1,"y":25},{"x":12000,"y":25}]},{"key":"border","values":[{"x":1,"y":-8.25},{"x":12000,"y":-8.25}]}];
+      var data = [{"key":"trans_1","values":[{"x":0,"y":-0},{"x":1,"y":-2.89},{"x":2000,"y":-2.89},{"x":2001,"y":-0},{"x":3999,"y":-0},{"x":4000,"y":-2.89},{"x":6000,"y":-2.89},{"x":6001,"y":-0},{"x":7999,"y":-0},{"x":8000,"y":-2.89},{"x":12000,"y":-2.89},{"x":12001,"y":-0}]},{"key":"trans_2","values":[{"x":0,"y":-0},{"x":1,"y":-5.78},{"x":2000,"y":-5.78},{"x":2001,"y":-0},{"x":7999,"y":-0},{"x":8000,"y":-5.78},{"x":12000,"y":-5.78},{"x":12001,"y":-0}]},{"key":"trans_3","values":[{"x":0,"y":-0},{"x":1,"y":-8.67},{"x":2000,"y":-8.67},{"x":2001,"y":-0},{"x":3999,"y":-0},{"x":4000,"y":-8.67},{"x":6000,"y":-8.67},{"x":6001,"y":-0}]},{"key":"trans_4","values":[{"x":3999,"y":-0},{"x":4000,"y":-11.56},{"x":6000,"y":-11.56},{"x":6001,"y":-0},{"x":7999,"y":-0},{"x":8000,"y":-11.56},{"x":12000,"y":-11.56},{"x":12001,"y":-0}]},{"key":"sample1","values":[{"x":1,"y":11},{"x":12000,"y":9}]},{"key":"sample2","values":[{"x":1,"y":21},{"x":12000,"y":19}]},{"key":"sample3","values":[{"x":1,"y":16},{"x":12000,"y":14}]},{"key":"sample4","values":[{"x":1,"y":26},{"x":12000,"y":24}]},{"key":"border","values":[{"x":1,"y":-12.716},{"x":12000,"y":-12.716}]}];
 	  var ballgowncolors = ["#000000","#000000","#000000","#000000","#CD99D8","#CD99D8","#DB9D85","#DB9D85","#000000"];
 
       nv.addGraph(function() {
@@ -49,6 +50,7 @@
          return chart;
        });
     </script>
+	<p>Color code: <font color='#DB9D85'>control</font>, <font color='#CD99D8'>case</font>.</p>
 
   </body>
 </html>

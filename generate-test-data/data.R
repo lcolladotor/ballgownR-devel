@@ -40,6 +40,8 @@ for(s in sampledirs) {
 	tnew <- tdata
 	
 	enew$rcount <- enew$ucount <- enew$mrcount <- rep(populateData(s), nrow(enew))
+	set.seed(20130412)
+	enew$cov <- enew$mcov <- round(runif(n=nrow(enew), min = populateData(s) - 2, max = populateData(s) + 2))
 	inew$rcount <- inew$ucount <- inew$mrcount <- rep(populateData(s), nrow(inew))
 	tnew$cov <- tnew$FPKM <- rep(populateData(s), nrow(tnew))
 	
