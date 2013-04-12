@@ -1,0 +1,5 @@
+i_id	chr	strand	start	end	rcount	ucount	mrcount
+1	1	+	2001	3999	15	15	15
+2	1	+	6001	7999	15	15	15
+3	1	+	2001	7999	15	15	15
+4	1	-	5001	5999	15	15	15

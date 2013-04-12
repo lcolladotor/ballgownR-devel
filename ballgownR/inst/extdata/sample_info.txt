@@ -1,0 +1,5 @@
+sample	dir	outcome
+sampleName1	sample1	control
+sampleName2	sample2	control
+sampleName3	sample3	case
+sampleName4	sample4	case

@@ -1,0 +1,6 @@
+t_id	chr	strand	start	end	t_name	num_exons	length	gene_id	gene_name	cov	FPKM
+1	1	+	1	12000	trans_1	3	8002	gene_1	name_1	10	10
+2	1	+	1	12000	trans_2	2	6001	gene_1	name_1	10	10
+3	1	+	1	8000	trans_3	2	4001	gene_1	name_1	10	10
+4	1	+	4000	12000	trans_4	2	6002	gene_1	name_1	10	10
+5	1	-	3000	8000	trans_5	2	5001	gene_2	name_2	10	10
