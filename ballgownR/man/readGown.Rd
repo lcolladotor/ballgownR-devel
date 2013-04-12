@@ -31,7 +31,10 @@
   multiple samples.
 }
 \examples{
-?readGown # Read the help. Example to do!
+#Read toy data
+dataDir <- system.file("extdata", "ballgownData", package="ballgownR")
+samplePattern <- "sample"
+gown <- readGown(dataDir=dataDir, samplePattern=samplePattern)
 }
 \author{
   Leonardo Collado-Torres \email{lcollado@jhsph.edu}

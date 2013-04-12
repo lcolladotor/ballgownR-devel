@@ -1,21 +1,13 @@
 \name{viewGene}
 \alias{viewGene}
-\title{Interactive visualization of the ballgown results: raw coverage or rcounts}
+\title{Interactive visualization of the ballgown results}
 \usage{
-  viewGene(geneID, gown, group, coverage = FALSE,
-    tophatDir, exon.color = "#000000", location = "bottom",
-    spacing = 1, html = NULL, wdir = NULL)
+  viewGene(geneInfo, exon.color = "#000000",
+    location = "bottom", spacing = 0.02, html = NULL,
+    wdir = NULL, browse = TRUE)
 }
 \arguments{
   \item{geneID}{specifies the geneID to look at}
-
-  \item{gown}{specifies the output from \code{readGown}}
-
-  \item{coverage=FALSE}{determines whether to make a raw
-  coverage plot or show the rcounts}
-
-  \item{tophatDir}{specifies the TopHat directory. Used
-  when \code{coverage} is set to TRUE.}
 
   \item{exon.color}{is the color used for the exon lines}
 
@@ -34,9 +26,8 @@
   the html file name with the resulting plot
 }
 \description{
-  \code{viewGene} extracts the information according to a
-  geneID and plots the coverage or the rcounts (intron and
-  exon tables) in an interactive html
+  \code{viewGene} plots the information extracted with
+  \code{infoGene} in an interactive html
 }
 \examples{
 ?viewGene # Read the help. Example to do!

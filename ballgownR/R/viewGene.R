@@ -8,28 +8,41 @@
 #' @param spacing is the factor by which the exons are separated
 #' @param html specifies the html output file
 #' @param wdir specifies the directory where the plot will be made. You must have writing permission.
+#' @param browse=TRUE if you want to open a browser window to view the graphic
 #' @return the html file name with the resulting plot
 #' @export
 #' @author Leonardo Collado-Torres \email{lcollado@@jhsph.edu}
 #' @examples
 #' ?viewGene # Read the help. Example to do!
 
-viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL) {
+viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL, browse=TRUE) {
 	## Load required libraries
 	require(clickme)
 	require(colorspace)
+	
+	## for testing
+	if(FALSE) {
+		exon.color="#000000"
+		location="bottom"
+		spacing=0.02
+		html=NULL
+		wdir=NULL
+		browse=TRUE
+	}
 	
 	## Assign information form geneInfo
 	geneID <- geneInfo$geneID
 	group <- geneInfo$group
 	exons.df <- geneInfo$exons
 	toAdd <- geneInfo$transInfo
+	start <- geneInfo$start
+	end <- geneInfo$end
 	
 	## Set working directory
 	if(is.null(wdir)) wdir <- getwd()
 	
 	## Set default html file name
-	if(is.null(html)) html <- paste0(runif(1000000), "-", geneID, "-.html")
+	if(is.null(html)) html <- paste0(runif(1, max=1000000), "-", geneID, ".html")
 
 	## Copy layout to working directory
 	if(!"genome_info" %in% dir()) {
@@ -61,15 +74,11 @@ viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=
 		border.y <- max(c(exons.df$y, toAdd$y)) * 1.1
 	}
 	
-	
-	
-	## Set a border	
-	border <- data.frame(line=c("border", "border"), x=c(min(exons.df$), end), y=c(border.y, border.y))
+	## Set a border	to help visualize the exons
+	border <- data.frame(line=c("border", "border"), x=c(start, end), y=c(border.y, border.y))
 	
 	## Merge data
 	data <- rbind(exons.df, toAdd, border)
-	
-	
 	
 	## Format the colors
 	colors <- c(exons.col, sample.col, exons.col[1])
@@ -78,10 +87,10 @@ viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=
 	
 		
 	## Visualize
-	#clickme(data.filt, "genome_info", params=list(color=colors), html=html)
+	result <- clickme(data, "genome_info", params=list(color=colors), html_file_name=html, browse=browse)
 	## TO FIX: Error: Input to str_c should be atomic vectors
 	
 	## Done
-	return(list(data=data.filt, color=colors))
+	return(invisible(result))
 	
 }

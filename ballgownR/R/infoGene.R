@@ -5,18 +5,15 @@
 #' @param geneID specifies the geneID to look at
 #' @param gown specifies the output from \code{readGown}
 #' @param coverage=FALSE determines whether to make a raw coverage plot or show the rcounts
-#' @param tophatDir specifies the TopHat directory. Used when \code{coverage} is set to TRUE.
+#' @param tophatDir specifies the TopHat directory. It is required when \code{coverage} is set to TRUE.
+#' @param whichCount has to be mrcount, rcount or ucount if \code{countIntron=TRUE}. Otherwise it can also be cov and mcov.
 #' @return A list with the information needed to make the plot with \code{viewGene}
 #' @export
 #' @author Leonardo Collado-Torres \email{lcollado@@jhsph.edu}
 #' @examples
 #' ?viewGene # Read the help. Example to do!
 
-viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir=NULL, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL) {
-	## Load required libraries
-	require(colorspace)
-	suppressMessages(require(Rsamtools))
-	
+infoGene <- function(geneID, gown, group, countIntron=TRUE, coverage=FALSE, tophatDir=NULL, whichCount="mrcount") {
 	## Find region of interest
 	idx.t <- which(gown$trans$gene_id == geneID)
 	
@@ -32,9 +29,9 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir=NULL, exon.c
 	i.id <- lapply(t.id, function(x) { gown$i2t$i_id[ gown$i2t$t_id == x ] })
 	
 	## Get sample names and the exon/intron rcount columns
-	rcount.e <- which(gsub("\\..*", "", names(gown$exon[e.id[[1]][1], ])) == "rcount")
-	rcount.i <- which(gsub("\\..*", "", names(gown$intron[i.id[[1]][1], ])) == "rcount")
-	samples <- gsub("rcount\\.", "", names(gown$exon[e.id[[1]][1], ]))[rcount.e]
+	rcount.e <- which(gsub("\\..*", "", names(gown$exon[e.id[[1]][1], ])) == whichCount)
+	rcount.i <- which(gsub("\\..*", "", names(gown$intron[i.id[[1]][1], ])) == whichCount)
+	samples <- gsub(paste0(whichCount, "\\."), "", names(gown$exon[e.id[[1]][1], ]))[rcount.e]
 	
 	## Get exon information by transcript
 	exons.df <- lapply(1:length(e.id), function(e) {	
@@ -53,31 +50,23 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir=NULL, exon.c
 	if(coverage == FALSE) {
 				
 		## Initialize rcount data
-		rcount.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(0, each=nBases))
+		rcount.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(NA, each=nBases))
 		
 		## Count exon information
-		for(e in 1:length(e.id)) {
-			for(exon in e.id[[e]]) {
-				x <- seq(gown$exon$start[exon], gown$exon$end[exon])			
-				vals <- as.vector(as.matrix(gown$exon[exon, rcount.e]))
-				y <- rep(vals, each=length(x))
-				rcount.df$y[ rcount.df$x %in% x ] <- rcount.df$y[ rcount.df$x %in% x ] + y
-			}
-		}
+		rcount.df <- .countInfo(ids=e.id, df=gown$exon, whichCols=rcount.e, result=rcount.df)
 		
 		## Count intron information
-		for(i in 1:length(i.id)) {
-			for(intron in i.id[[i]]) {
-				x <- seq(gown$intron$start[intron], gown$intron$end[intron])			
-				vals <- as.vector(as.matrix(gown$intron[intron, rcount.i]))
-				y <- rep(vals, each=length(x))
-				rcount.df$y[ rcount.df$x %in% x ] <- rcount.df$y[ rcount.df$x %in% x ] + y
-			}
+		if(countIntron) {
+			rcount.df <- .countInfo(ids=i.id, df=gown$intron, whichCols=rcount.i, result=rcount.df)
 		}
 		
+		## Finish
 		toAdd <- rcount.df
 		
 	} else if(coverage == TRUE & !is.null(tophatDir)) {
+		
+		## Load required libraries
+		suppressMessages(require(Rsamtools))
 		
 		## Initialize coverage data
 		coverage.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(0, each=nBases))
@@ -100,8 +89,8 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir=NULL, exon.c
 	}
 
 	## Purge useless info
-	exons.filt <- filterInfoGene(exons.df)
-	toAdd.filt <- filterInfoGene(toAdd)
+	exons.filt <- .filterInfoGene(exons.df)
+	toAdd.filt <- .filterInfoGene(toAdd)
 	
 	## Merge data
 	data <- list(exons=exons.filt, transInfo=toAdd.filt, start=start, end=end, group=group, geneID=geneID)
@@ -109,6 +98,20 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir=NULL, exon.c
 	## Done
 	return(data)
 	
+}
+
+## This function counts the exon/intron information
+.countInfo <- function(ids, df, whichCols, result) {
+	for(id in 1:length(ids)) {
+		for(xon in ids[[id]]) {
+			x <- seq(df$start[xon], df$end[xon])			
+			vals <- as.vector(as.matrix(df[xon, whichCols]))
+			y <- rep(vals, each=length(x))
+			idx <- result$x %in% x
+			result$y[idx] <- pmin(result$y[idx],  y, na.rm=TRUE)
+		}
+	}
+	return(result)
 }
 
 ## This function removes uninformative points to avoid overloading the html

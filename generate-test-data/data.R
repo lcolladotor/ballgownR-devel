@@ -52,11 +52,3 @@ for(s in sampledirs) {
 ### Sample info
 info <- data.frame("sample"=paste0("sampleName", 1:4), dir=paste0("sample", 1:4), outcome=rep(c("control", "case"), each=2))
 write.table(info, file="sample_info.txt", quote=FALSE, sep="\t", row.names=FALSE)
-
-
-
-### Check that it works
-
-dataDir <- system.file("extdata", "ballgownData", package="ballgownR")
-samplePattern <- "sample"
-gown <- readGown(dataDir=dataDir, samplePattern=samplePattern)
