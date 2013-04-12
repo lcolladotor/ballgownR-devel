@@ -1,11 +1,8 @@
-#' Interactive visualization of the ballgown results: raw coverage or rcounts
+#' Interactive visualization of the ballgown results
 #'
-#' \code{viewGene} extracts the information according to a geneID and plots the coverage or the rcounts (intron and exon tables) in an interactive html
+#' \code{viewGene} plots the information extracted with \code{infoGene} in an interactive html
 #'
 #' @param geneID specifies the geneID to look at
-#' @param gown specifies the output from \code{readGown}
-#' @param coverage=FALSE determines whether to make a raw coverage plot or show the rcounts
-#' @param tophatDir specifies the TopHat directory. Used when \code{coverage} is set to TRUE.
 #' @param exon.color is the color used for the exon lines
 #' @param location has to be 'bottom' or 'top' and it controls where the exon tracks are showed
 #' @param spacing is the factor by which the exons are separated
@@ -17,11 +14,16 @@
 #' @examples
 #' ?viewGene # Read the help. Example to do!
 
-viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL) {
+viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL) {
 	## Load required libraries
 	require(clickme)
 	require(colorspace)
-	suppressMessages(require(Rsamtools))
+	
+	## Assign information form geneInfo
+	geneID <- geneInfo$geneID
+	group <- geneInfo$group
+	exons.df <- geneInfo$exons
+	toAdd <- geneInfo$transInfo
 	
 	## Set working directory
 	if(is.null(wdir)) wdir <- getwd()
@@ -38,40 +40,7 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	## Change clickme's path
 	set_root_path(wdir)
 	
-	## Find region of interest
-	idx.t <- which(gown$trans$gene_id == geneID)
-	
-	
-	## Find start and end
-	start <- min(gown$trans$start[idx.t])
-	end <- max(gown$trans$end[idx.t])	
-	nBases <- end - start + 1
-	
-	
-	
-	## Subset trans, exon and intron
-	t.id <- gown$trans$t_id[idx.t]
-	names(t.id) <- gown$trans$t_name[idx.t]
-	e.id <- lapply(t.id, function(x) { gown$e2t$e_id[ gown$e2t$t_id == x ] })
-	i.id <- lapply(t.id, function(x) { gown$i2t$i_id[ gown$i2t$t_id == x ] })
-	
-	## Get sample names and the exon/intron rcount columns
-	rcount.e <- which(gsub("\\..*", "", names(gown$exon[e.id[[1]][1], ])) == "rcount")
-	rcount.i <- which(gsub("\\..*", "", names(gown$intron[i.id[[1]][1], ])) == "rcount")
-	samples <- gsub("rcount\\.", "", names(gown$exon[e.id[[1]][1], ]))[rcount.e]
-	
-	## Get exon information
-	exons.df <- lapply(1:length(e.id), function(e) {	
-		## Get transcript name
-		line <- names(e.id)[[e]]		
-		res <- lapply(e.id[[e]], function(exon) {	
-			x <- c(gown$exon$start[exon], gown$exon$end[exon])			
-			y <- rep(e, length(x))
-			data.frame(line=rep(line, length(x)), x=x, y=y)				 
-		})
-		do.call(rbind, res)
-	})
-	exons.df <- do.call(rbind, exons.df)
+	## Contruct the colors for the exons
 	exons.col <- rep(exon.color, length(unique(exons.df$line)))
 	
 	## Define sample colors
@@ -80,57 +49,6 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	for(j in 1:length(unique(group))){
 		k <- unique(group)[j]
 		sample.col[group %in% k] <- group.col[k]
-	}
-	
-	
-	## Build data: either summarized data or coverage data
-	if(coverage == FALSE) {
-				
-		## Initialize rcount data
-		rcount.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(0, each=nBases))
-		
-		## Count exon information
-		for(e in 1:length(e.id)) {
-			for(exon in e.id[[e]]) {
-				x <- seq(gown$exon$start[exon], gown$exon$end[exon])			
-				vals <- as.vector(as.matrix(gown$exon[exon, rcount.e]))
-				y <- rep(vals, each=length(x))
-				rcount.df$y[ rcount.df$x %in% x ] <- rcount.df$y[ rcount.df$x %in% x ] + y
-			}
-		}
-		
-		## Count intron information
-		for(i in 1:length(i.id)) {
-			for(intron in i.id[[i]]) {
-				x <- seq(gown$intron$start[intron], gown$intron$end[intron])			
-				vals <- as.vector(as.matrix(gown$intron[intron, rcount.i]))
-				y <- rep(vals, each=length(x))
-				rcount.df$y[ rcount.df$x %in% x ] <- rcount.df$y[ rcount.df$x %in% x ] + y
-			}
-		}
-		
-		toAdd <- rcount.df
-		
-	} else {
-		
-		## Initialize coverage data
-		coverage.df <- data.frame(line=rep(samples, each=nBases), x=start:end, y=rep(0, each=nBases))
-		
-		## Define region to load
-		which <- RangesList(IRanges(start=start, end=end))
-		chr <- gown$trans$chr[idx.t[1]]
-		names(which) <- chr
-		param <- ScanBamParam(which=which)
-		
-		for(s in names(gown$dirs)) {
-			bamfile <- BamFile(paste(tophatDir, s, "accepted_hits.bam", sep="/"))
-			# Read it and get the coverage. Extract only the one for the chr in question
-			cov <- coverage(readBamGappedAlignments(bamfile, param=param))[[chr]]
-			coverage.df$y[ coverage.df$line == s] <- as.vector(cov[start:end])
-		}
-		
-		toAdd <- coverage.df
-		
 	}
 	
 	## Adjust where to show the exons and it's spacing
@@ -146,29 +64,11 @@ viewGene <- function(geneID, gown, group, coverage=FALSE, tophatDir, exon.color=
 	
 	
 	## Set a border	
-	border <- data.frame(line=c("border", "border"), x=c(start, end), y=c(border.y, border.y))
+	border <- data.frame(line=c("border", "border"), x=c(min(exons.df$), end), y=c(border.y, border.y))
 	
 	## Merge data
 	data <- rbind(exons.df, toAdd, border)
 	
-	## Purge useless info
-	filter <- function(data) {
-		result <- lapply(unique(data$line), function(x) {
-			sub <- data[ data$line == x, ]
-			which.diff <- which(diff(sub$y) != 0)
-			if(length(which.diff) == 0) {
-				res <- rbind(sub[1, ], sub[nrow(sub), ])
-			} else {
-				res <- rbind(sub[1, ], sub[as.vector(sapply(which.diff, function(z) { c(z, z+1)})), ])
-				res <- rbind(res, sub[nrow(sub), ])
-			}
-			return(res)
-		}) 
-		result <- do.call(rbind, result)
-		rownames(result) <- 1:nrow(result)
-		return(result)
-	}
-	data.filt <- filter(data)
 	
 	
 	## Format the colors
