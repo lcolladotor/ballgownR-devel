@@ -3,14 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ opts$params$title }}</title>
-    {{ append_scripts(opts) }}
-    {{ append_styles(opts) }}
+    {{ append_external(opts) }}
   </head>
 
   <body>
  	<h1>{{ opts$params$main }}</h1>
     <script type="text/javascript">
-      var data = {{ opts$data }};
+      var data = {{ get_data_as_json(opts) }};
 	  var ballgowncolors = {{ opts$params$color }};
 
       nv.addGraph(function() {

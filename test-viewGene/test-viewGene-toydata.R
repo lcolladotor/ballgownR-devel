@@ -1,4 +1,4 @@
-### Check that it works
+### Check that infoGene() and viewGene() work
 
 suppressMessages(library(ballgownR))
 dataDir <- system.file("extdata", "ballgownData", package="ballgownR")
@@ -12,7 +12,7 @@ match <- sapply(names(gown$dirs), function(x) { which(info$dir == x)})
 geneInfo <- infoGene(geneID="gene_1", gown=gown, group=info$outcome[match])
 
 ## Visualize
-viewGene(geneInfo=geneInfo, html="toy-test.html", spacing=0.1)
+viewGene(geneInfo=geneInfo, html="toy-test.html", spacing=0.1, width=1000)
 
 ## Coverage
 geneInfo2 <- infoGene(geneID="gene_1", gown=gown, group=info$outcome[match], countIntron=FALSE, whichCount="cov")

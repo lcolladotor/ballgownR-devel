@@ -4,7 +4,8 @@
 \usage{
   viewGene(geneInfo, exon.color = "#000000",
     location = "bottom", spacing = 0.02, html = NULL,
-    wdir = NULL, browse = TRUE, title = NULL, main = NULL)
+    wdir = NULL, browse = TRUE, title = NULL, main = NULL,
+    height = 500, width = 800)
 }
 \arguments{
   \item{geneInfo}{is the output of \code{infoGene}}
@@ -31,9 +32,14 @@
 
   \item{main}{specifies the title of the plot in the HTML
   file}
+
+  \item{height}{specifies in pixels the height of the
+  plot.}
+
+  \item{width}{specifies in pixels the width of the plot.}
 }
 \value{
-  the html file name with the resulting plot
+  The html file name of the resulting plot.
 }
 \description{
   \code{viewGene} plots the information extracted with

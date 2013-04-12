@@ -12,7 +12,9 @@
 #' @param browse=TRUE if you want to open a browser window to view the graphic
 #' @param title specifies the title in the HTML file
 #' @param main specifies the title of the plot in the HTML file
-#' @return the html file name with the resulting plot
+#' @param height specifies in pixels the height of the plot.
+#' @param width specifies in pixels the width of the plot.
+#' @return The html file name of the resulting plot.
 #' @export
 #' @author Leonardo Collado-Torres \email{lcollado@@jhsph.edu}
 #' @examples
@@ -27,21 +29,23 @@
 #' viewGene(geneInfo=geneInfo, html="toy-test-2.html", spacing=0.1, location="top")
 #' @seealso infoGene
 
-viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL, browse=TRUE, title=NULL, main=NULL) {
+viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=0.02, html=NULL, wdir=NULL, browse=TRUE, title=NULL, main=NULL, height=500, width=800) {
 	## Load required libraries
 	require(clickme)
 	require(colorspace)
 	
 	## for testing
 	if(FALSE) {
-		exon.color="#000000"
-		location="bottom"
-		spacing=0.02
-		html=NULL
-		wdir=NULL
+		exon.color <- "#000000"
+		location <- "bottom"
+		spacing <- 0.02
+		html <- NULL
+		wdir <- "/Users/lcollado/enigma2/ballgownR-devel/test-viewGene"
 		browse=TRUE
 		title <- NULL
 		main <- NULL
+		height <- 500
+		width <- 800
 	}
 	
 	## Assign information form geneInfo
@@ -115,9 +119,7 @@ viewGene <- function(geneInfo, exon.color="#000000", location="bottom", spacing=
 	
 		
 	## Visualize
-	result <- clickme(data, "genome_info", params=list(color=colors, title=title, main=main, groupLabel=group.col.label), html_file_name=html, browse=browse)
-	## TO FIX: Error: Input to str_c should be atomic vectors
-	## Might be due to a newer clickme version
+	result <- clickme(data, "genome_info", params=list(color=colors, title=title, main=main, groupLabel=group.col.label, height=height, width=width), html_file_name=html)
 	
 	## Done
 	return(invisible(result))
