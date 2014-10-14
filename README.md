@@ -1,3 +1,10 @@
+The complete version of `ballgown` is available via [Bioconductor](http://www.bioconductor.org/packages/devel/bioc/html/ballgown.html) and was developed by Alyssa C. Frazee at the [alyssafrazee/ballgown](https://github.com/alyssafrazee/ballgown) repository.
+
+
+What is shown below is just an old test made in 2013.
+
+
+
 # Welcome to ballgownR's home!
 
 ## What is this for?
